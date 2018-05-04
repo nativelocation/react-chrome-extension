@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "Holofollowers",
+  "author": "Wyatt Arent",
+  "version": "1.0.0",
+  "description": "Automatically follow and unfollow on Holonis.",
+  "content_scripts": [
+    {
+      "matches": ["https://www.holonis.com/*", "https://holonis.com/*"],
+      "js" : ["content_script.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["background_script.js"],
+    "persistent": true
+  },
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "*://*.holonis.com/*"
+  ]
+}
