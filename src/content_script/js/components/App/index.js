@@ -1,10 +1,10 @@
-import { h, Component } from 'preact';
-import Overlay from '../Overlay';
+import { h, Component } from 'preact'
+import Overlay from '../Overlay'
 
 export default class extends Component {
 
   constructor() {
-    super();
+    super()
     this.state = {
       showOverlay: false
     }

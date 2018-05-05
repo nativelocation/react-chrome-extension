@@ -1,11 +1,11 @@
-import { connect } from 'preact-redux';
-import { h, Component } from 'preact';
+import { connect } from 'preact-redux'
+import { h, Component } from 'preact'
 class OverlayUserFollow extends Component {
 
   changeMaxTime(props, val) {
 
     if (val < props.userFollowMinTime) {
-      val = props.userFollowMinTime;
+      val = props.userFollowMinTime
     }
 
     props.dispatch({ 
@@ -13,16 +13,16 @@ class OverlayUserFollow extends Component {
       values: {
         userFollowMaxTime: val
       }
-    });
+    })
 
   }
 
   changeMinTime(props, val) {
 
-    if (val < 1) val = 1;
+    if (val < 1) val = 1
 
     if (val > props.userFollowMaxTime) {
-      val = props.userFollowMaxTime;
+      val = props.userFollowMaxTime
     }
 
     props.dispatch({ 
@@ -30,7 +30,7 @@ class OverlayUserFollow extends Component {
       values: {
         userFollowMinTime: val
       }
-    });
+    })
   }
 
   beginFollowing(props) {
@@ -66,4 +66,4 @@ class OverlayUserFollow extends Component {
   }
 }
 
-export default connect(state => state)(OverlayUserFollow);
+export default connect(state => state)(OverlayUserFollow)

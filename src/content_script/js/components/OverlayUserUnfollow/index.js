@@ -1,11 +1,11 @@
-import { connect } from 'preact-redux';
-import { h, Component } from 'preact';
+import { connect } from 'preact-redux'
+import { h, Component } from 'preact'
 class OverlayUserUnfollow extends Component {
 
   changeMaxTime(props, val) {
 
     if (val < props.userUnfollowMinTime) {
-      val = props.userUnfollowMinTime;
+      val = props.userUnfollowMinTime
     }
 
     props.dispatch({ 
@@ -13,16 +13,16 @@ class OverlayUserUnfollow extends Component {
       values: {
         userUnfollowMaxTime: val
       }
-    });
+    })
 
   }
 
   changeMinTime(props, val) {
 
-    if (val < 1) val = 1;
+    if (val < 1) val = 1
 
     if (val > props.userUnfollowMaxTime) {
-      val = props.userUnfollowMaxTime;
+      val = props.userUnfollowMaxTime
     }
 
     props.dispatch({ 
@@ -30,7 +30,7 @@ class OverlayUserUnfollow extends Component {
       values: {
         userUnfollowMinTime: val
       }
-    });
+    })
   }
 
   beginUnfollowing(props) {
@@ -66,4 +66,4 @@ class OverlayUserUnfollow extends Component {
   }
 }
 
-export default connect(state => state)(OverlayUserUnfollow);
+export default connect(state => state)(OverlayUserUnfollow)
