@@ -48,5 +48,5 @@ export function attemptUnfollow() {
     document.querySelectorAll('.nav-tabs a')[1].click()
   })
   .then(() => new Promise((resolve, reject) => clickFollowButton(resolve, reject, '.btn-follow-follower.following', button => button.classList.remove('following'))))
-  .catch(err => console.error("Holofollowers problem", err))
+  .catch(err => console.error('Holofollowers problem', err))
 }

@@ -34,6 +34,7 @@ class OverlayUserFollow extends Component {
   }
 
   beginFollowing(props) {
+    props.onSet('automate.follow')
     props.dispatch({
       type: 'automate.follow'
     })
@@ -47,7 +48,7 @@ class OverlayUserFollow extends Component {
             value={props.userFollowMinTime}
             onInput={event => this.changeMinTime(props, event.target.value)}
             onChange={event => this.setState()}
-            type="number" />
+            type='number' />
           Minimum wait seconds
         </label>
         <label>
@@ -55,7 +56,7 @@ class OverlayUserFollow extends Component {
             value={props.userFollowMaxTime}
             onInput={event => this.changeMaxTime(props, event.target.value)}
             onChange={event => this.setState()}
-            type="number" />
+            type='number' />
           Maximum wait seconds
         </label>
         <button onClick={() => this.beginFollowing(props)}>{

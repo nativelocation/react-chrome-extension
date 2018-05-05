@@ -12,7 +12,7 @@ const defaultState = {
   userUnfollowMinTime: 1,
   userUnfollowMaxTime: 1,
   automatingFollow: false,
-  automatingUnfollow: false,
+  automatingUnfollow: false
 }
 
 function reducer(state = defaultState, action) {
@@ -39,7 +39,7 @@ const toggleAutomation = store => next => action => {
     clearTimeout(timeout[automationType])
     timeout = {}
     return next({
-      type: "set",
+      type: 'set',
       values: {
         [`automating${automationType}`]: false
       }
@@ -51,16 +51,16 @@ const toggleAutomation = store => next => action => {
 
     let timeoutSeconds = (Math.random() * (state[`user${automationType}MaxTime`] - state[`user${automationType}MinTime`])) + state[`user${automationType}MinTime`]
 
-    timeout[automationType] = setTimeout(() => {
+      timeout[automationType] =  setTimeout(() => {
 
       automations[`attempt${automationType}`]().then(() => {
         automationLoop()
       }).catch(err => {
-        console.error("Problem with Holofollower", err)
+        console.error('Problem with Holofollower', err)
         clearTimeout(timeout[automationType])
         timeout[automationType] = {}
         return next({
-          type: "set",
+          type: 'set',
           values: {
             [`automating${automationType}`]: false
           }
@@ -72,7 +72,7 @@ const toggleAutomation = store => next => action => {
   automationLoop()
 
   return next({
-    type: "set",
+    type: 'set',
     values: {
       [`automating${automationType}`]: true
     }

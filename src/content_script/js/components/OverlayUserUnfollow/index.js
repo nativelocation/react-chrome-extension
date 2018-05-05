@@ -34,6 +34,7 @@ class OverlayUserUnfollow extends Component {
   }
 
   beginUnfollowing(props) {
+    props.onSet('automate.unfollow')
     props.dispatch({
       type: 'automate.unfollow'
     })

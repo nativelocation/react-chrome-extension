@@ -16,9 +16,9 @@ export default class extends Component {
 
     return (
       <div
-        className="holofollowers-overlay">
-        { isUserPage && !isOwnPage && <OverlayUserFollow /> }
-        { isUserPage && isOwnPage && <OverlayUserUnfollow /> }
+        className='holofollowers-overlay'>
+        { isUserPage && !isOwnPage && <OverlayUserFollow onSet={props.onSet} /> }
+        { isUserPage && isOwnPage && <OverlayUserUnfollow onSet={props.onSet} /> }
         { !isUserPage && <OverlayDefault /> }
       </div>
     )
