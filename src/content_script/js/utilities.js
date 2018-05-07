@@ -39,7 +39,14 @@ export function attemptFollow() {
   .then(() => {
     document.querySelectorAll('.nav-tabs a')[0].click()
   })
-  .then(() => new Promise((resolve, reject) => clickFollowButton(resolve, reject, '.btn-follow-follower:not(.following)', button => button.classList.add('following'))))
+  .then(() => new Promise(
+    (resolve, reject) => clickFollowButton(
+      resolve,
+      reject,
+      '.btn-follow-follower:not(.following)',
+      button => button.classList.add('following')
+    )
+  ))
 }
 
 export function attemptUnfollow() {
@@ -47,6 +54,31 @@ export function attemptUnfollow() {
   .then(() => {
     document.querySelectorAll('.nav-tabs a')[1].click()
   })
-  .then(() => new Promise((resolve, reject) => clickFollowButton(resolve, reject, '.btn-follow-follower.following', button => button.classList.remove('following'))))
+  .then(() => new Promise(
+    (resolve, reject) => clickFollowButton(
+      resolve,
+      reject,
+      '.btn-follow-follower.following',
+      button => button.classList.remove('following')
+    )
+  ))
   .catch(err => console.error('Holofollowers problem', err))
+}
+
+export function attemptLike() {
+  let buttonClassName = '.ds-engagement.ng-isolate-scope:not(.ng-hide) div .dsicon-heart.ds-engagement-icon:not(.ds-engagement-icon--liked)'
+  let button = document.querySelectorAll(buttonClassName)[0]
+  if (button) {
+    button.click()
+    button.classList.add('ds-engagement-icon--liked')
+  }
+}
+
+export function attemptComment() {
+  let buttonClassName = '.ds-engagement.ng-isolate-scope:not(.ng-hide) div .dsicon-heart.ds-engagement-icon:not(.ds-engagement-icon--liked)'
+  let button = document.querySelectorAll(buttonClassName)[0]
+  if (button) {
+    button.click()
+    button.classList.add('ds-engagement-icon--liked')
+  }
 }

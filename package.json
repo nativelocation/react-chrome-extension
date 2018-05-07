@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "",
   "dependencies": {
+    "node-spintax": "^1.0.4",
     "preact": "^8.2.7",
     "preact-redux": "^2.0.3",
     "redux": "^4.0.0"
