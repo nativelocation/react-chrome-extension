@@ -23,7 +23,6 @@ export default class extends Component {
         { isUserPage && !isOwnPage && <OverlayUserFollow onSet={props.onSet} /> }
         { isUserPage && isOwnPage && <OverlayUserUnfollow onSet={props.onSet} /> }
         { isSearchPage && <OverlayAutoLike onSet={props.onSet} /> }
-        { !isUserPage && <OverlayDefault /> }
       </div>
     )
   }

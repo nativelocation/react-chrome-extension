@@ -59,60 +59,58 @@ const toggleAutomation = store => next => action => {
     case 'automate.unfollow':
       automationType = 'Unfollow'
       break;
-    case 'automate.Like':
+    case 'automate.like':
       automationType = 'Like'
       break;
-    case 'automate.Comment':
+    case 'automate.comment':
       automationType = 'Comment'
       break;
     default:
       return next(action)
   }
 
-  function stopLoop() {
-    if (timeout['Follow']) {
-      clearTimeout(timeout['Follow'])
-      timeout = {}
-      return next({
-        type: 'set',
-        values: {
-          ['automatingFollow']: false
-        }
-      })
-    }
-    if (timeout['Unfollow']) {
-      clearTimeout(timeout['Unfollow'])
-      timeout = {}
-      return next({
-        type: 'set',
-        values: {
-          ['automatingUnfollow']: false
-        }
-      })
-    }
-    if (timeout['Like']) {
-      clearTimeout(timeout['Like'])
-      timeout = {}
-      return next({
-        type: 'set',
-        values: {
-          ['automatingLike']: false
-        }
-      })
-    }
-    if (timeout['Comment']) {
-      clearTimeout(timeout['Comment'])
-      timeout = {}
-      return next({
-        type: 'set',
-        values: {
-          ['automatingComment']: false
-        }
-      })
-    }
+  if (timeout['Follow']) {
+    clearTimeout(timeout['Follow'])
+    timeout = {}
+    return next({
+      type: 'set',
+      values: {
+        ['automatingFollow']: false
+      }
+    })
+  }
+  if (timeout['Unfollow']) {
+    clearTimeout(timeout['Unfollow'])
+    timeout = {}
+    return next({
+      type: 'set',
+      values: {
+        ['automatingUnfollow']: false
+      }
+    })
+  }
+  if (timeout['Like']) {
+    clearTimeout(timeout['Like'])
+    timeout = {}
+    return next({
+      type: 'set',
+      values: {
+        ['automatingLike']: false
+      }
+    })
+  }
+  if (timeout['Comment']) {
+    clearTimeout(timeout['Comment'])
+    timeout = {}
+    return next({
+      type: 'set',
+      values: {
+        ['automatingComment']: false
+      }
+    })
   }
 
-  stopLoop()
+  // stopLoop()
 
   function automationLoop() {
     let state = store.getState()
@@ -120,13 +118,20 @@ const toggleAutomation = store => next => action => {
     let timeoutSeconds = (Math.random() * (state[`user${automationType}MaxTime`] - state[`user${automationType}MinTime`])) + state[`user${automationType}MinTime`]
 
     timeout[automationType] =  setTimeout(() => {
-      if (automationType === 'Like') {
+      if (automationType === 'Comment') {
+        automations[`attempt${automationType}`](state.userCommentContent, userCommentMinTime, userCommentMaxTime)
+        .then(() => {
+          // automationLoop()
+        })
+      } else if (automationType === 'Like') {
         automations[`attempt${automationType}`]()
         automationLoop()
       } else {
-        automations[`attempt${automationType}`]().then(() => {
+        automations[`attempt${automationType}`]()
+        .then(() => {
           automationLoop()
-        }).catch(err => {
+        })
+        .catch(err => {
           console.error('Problem with Holofollower', err)
           clearTimeout(timeout[automationType])
           timeout[automationType] = {}

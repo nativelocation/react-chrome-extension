@@ -1,7 +1,9 @@
+import Spinner from 'node-spintax'
+
 const TIMEOUT_LOAD_DATA = 1000
 const ATTEMPT_LIMIT = 10
 
-function openTabs(resolve, reject) {
+function openFollowTabs(resolve, reject) {
   if (document.querySelector('.followers-tabs')) return resolve()
 
   let followersButton = document.querySelectorAll('.ds-holospace-stats')
@@ -12,19 +14,23 @@ function openTabs(resolve, reject) {
   setTimeout(resolve, TIMEOUT_LOAD_DATA)
 }
 
+function openCommentTabs(resolve, reject) {
+  if (document.querySelector('.ds-comment-input.ds-form-wrapper.ng-isolate-scope.ng-valid .ds-textarea-wrapper .ds-textarea-container .ds-textarea.ds-text')) return resolve()
+
+  let commentClassName = '.ds-engagement.ng-isolate-scope:not(.ng-hide) div .ds-engagement-icon.dsicon-comment'
+  let commentsButton = document.querySelectorAll(commentClassName)
+  if (!commentsButton.length) return reject()
+  commentsButton = commentsButton[0]
+  if (!commentsButton) return reject()
+  commentsButton.click()
+  setTimeout(resolve, TIMEOUT_LOAD_DATA)
+}
+
 function clickFollowButton(resolve, reject, className, modButton, listHeight = 0, attempt = 0) {
   let button = document.querySelectorAll(className)[0]
   let activeList = document.querySelector('.tab-pane.active > .w-modal-follow-list')
-  
-  // No follow/unfollow, scroll down and attempt to load additional ones
-  if (!button && (listHeight != activeList.scrollHeight || attempt < ATTEMPT_LIMIT)) {
-    activeList.scrollTop = activeList.scrollHeight
-    listHeight = activeList.scrollHeight
-    // TODO: Follow timeout can probably be calculated using an background script interceptor and more complex messaging
-    setTimeout(clickFollowButton.bind(this, resolve, reject, className, modButton, activeList.scrollHeight, attempt+1), TIMEOUT_LOAD_DATA)
-    return
-  } else if (!button && listHeight == activeList.scrollHeight) {
-    // If the attempt has been made, then just abort because there's no more action to take
+
+  if (!button && listHeight == activeList.scrollHeight) {
     return reject()
   } else if (button) {
     button.click()
@@ -34,8 +40,19 @@ function clickFollowButton(resolve, reject, className, modButton, listHeight = 0
   return resolve()
 }
 
+function clickPublishButton(resolve, reject, className, callback) {
+  let button = document.querySelectorAll(className)[0]
+  console.log(button)
+  if (button) {
+    button.click()
+    // if (callback) setTimeout(callback, TIMEOUT_LOAD_DATA)
+  }
+
+  return resolve()
+}
+
 export function attemptFollow() {
-  return new Promise(openTabs)
+  return new Promise(openFollowTabs)
   .then(() => {
     document.querySelectorAll('.nav-tabs a')[0].click()
   })
@@ -50,7 +67,7 @@ export function attemptFollow() {
 }
 
 export function attemptUnfollow() {
-  return new Promise(openTabs)
+  return new Promise(openFollowTabs)
   .then(() => {
     document.querySelectorAll('.nav-tabs a')[1].click()
   })
@@ -58,7 +75,7 @@ export function attemptUnfollow() {
     (resolve, reject) => clickFollowButton(
       resolve,
       reject,
-      '.btn-follow-follower.following',
+      '.btn-follow-follower.following', 
       button => button.classList.remove('following')
     )
   ))
@@ -74,11 +91,36 @@ export function attemptLike() {
   }
 }
 
-export function attemptComment() {
-  let buttonClassName = '.ds-engagement.ng-isolate-scope:not(.ng-hide) div .dsicon-heart.ds-engagement-icon:not(.ds-engagement-icon--liked)'
-  let button = document.querySelectorAll(buttonClassName)[0]
-  if (button) {
-    button.click()
-    button.classList.add('ds-engagement-icon--liked')
-  }
+export function attemptComment(commentSpin, minTime, maxTime) {
+  return new Promise(openCommentTabs)
+  .then(() => new Promise(
+    (resolve, reject) => {
+      let spinner = new Spinner(commentSpin)
+      let comment = spinner.unspinRandom(1);
+      console.log(comment)
+      let textContainer = document.querySelector('.ds-comment-input.ds-form-wrapper.ng-isolate-scope.ng-valid .ds-textarea-wrapper .ds-textarea-container .ds-textarea.ds-text')
+      console.log(textContainer)
+      
+      textContainer.addEventListener('input', function() {
+        textContainer.innerHTML = `<p>${comment[0]}</p>`
+      })
+      let event = new Event('input', {
+        'bubbles': true,
+        'cancelable': true
+      })
+      textContainer.dispatchEvent(event)
+      return resolve()
+    }
+  ))
+  .then(() => new Promise(
+    (resolve, reject) => clickPublishButton(
+      resolve,
+      reject,
+      '.ds-comments-publish.ds-body-link.ds-comments-publish--allowed',
+      () => {
+        window.location = 'https://www.holonis.com/feeds'
+      }
+    )
+  ))
+  .catch(err => console.error('Holofollowers problem', err))
 }

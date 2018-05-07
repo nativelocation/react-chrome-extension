@@ -53,17 +53,26 @@ class OverlayAutoLike extends Component {
     })
   }
 
-  beginLikeing(props) {
-    props.onSet('automate.Like')
+  changCommentSpin(props, val) {
+    props.dispatch({ 
+      type: 'set',
+      values: {
+        userCommentContent: val
+      }
+    })
+  }
+  
+  beginLike(props) {
+    props.onSet('automate.like')
     props.dispatch({
-      type: 'automate.Like'
+      type: 'automate.like'
     })
   }
 
   beginComment(props) {
-    props.onSet('automate.Comment')
+    props.onSet('automate.comment')
     props.dispatch({
-      type: 'automate.Comment'
+      type: 'automate.comment'
     })
   }
 
@@ -88,7 +97,7 @@ class OverlayAutoLike extends Component {
           />
             Maximum wait seconds
         </label>
-        <button onClick={() => this.beginLikeing(props)}>
+        <button onClick={() => this.beginLike(props)}>
           {props.automatingLike ? 'Stop autoLike' : 'Begin automatically Like'}
         </button>
         <div style={{ height: '20px' }}></div>
@@ -113,9 +122,9 @@ class OverlayAutoLike extends Component {
         <label>
           <input
             value={props.userCommentContent}
-            onInput={event => this.changAuthtMaxTime(props, event.target.value)}
+            onInput={event => this.changCommentSpin(props, event.target.value)}
             onChange={event => this.setState()}
-            type="number"
+            type="text"
           />
             Comment
         </label>
