@@ -1,7 +1,20 @@
 import Spinner from 'node-spintax'
 
+const worker = () => {
+  setTimeout(() => {
+    postMessage(1);
+  }, 1000);
+}
+
+let code = worker.toString();
+code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
+
+const blob = new Blob([code], {type: "application/javascript"});
+const myWorker = new Worker(URL.createObjectURL(blob));
+
 const TIMEOUT_LOAD_DATA = 1000
-const ATTEMPT_LIMIT = 10
+const ATTEMPT_LIMIT = 1000
+let WHOLE_BUTTONS = 0
 
 function openFollowTabs(resolve, reject) {
   if (document.querySelector('.followers-tabs')) return resolve()
@@ -27,12 +40,29 @@ function openCommentTabs(resolve, reject) {
 }
 
 function clickFollowButton(resolve, reject, className, modButton, listHeight = 0, attempt = 0) {
+  let buttons = document.querySelectorAll('.btn-follow-follower')
+  // console.log('WHOLE_BUTTONS', WHOLE_BUTTONS, buttons.length)
+  // if (buttons.length == WHOLE_BUTTONS) {
+  //   console.log('second', buttons, buttons.length, WHOLE_BUTTONS)
+  //   WHOLE_BUTTONS = 0
+  //   return reject()
+  // }
   let button = document.querySelectorAll(className)[0]
   let activeList = document.querySelector('.tab-pane.active > .w-modal-follow-list')
 
-  if (!button && listHeight == activeList.scrollHeight) {
-    return reject()
+  if (!button && (parseInt(listHeight) !== parseInt(activeList.scrollHeight))) {
+    activeList.scrollTop = activeList.scrollHeight
+    myWorker.onmessage = function(event) {
+      clickFollowButton.bind(this, resolve, reject, className, modButton, activeList.scrollHeight, attempt+1)
+    };
+    // setTimeout(clickFollowButton.bind(this, resolve, reject, className, modButton, activeList.scrollHeight, attempt+1), 800)
+    // setTimeout(function() { console.log('buttons', buttons, WHOLE_BUTTONS); WHOLE_BUTTONS = buttons.length }, 1000)
+    return resolve()
   } else if (button) {
+    let position = button.getBoundingClientRect()
+    if (window.innerHeight < position.y || position.y < 0) {
+      activeList.scrollTop = activeList.scrollTop + position.y - 200
+    }
     button.click()
     if (modButton) modButton(button)
   }
@@ -61,7 +91,8 @@ export function attemptFollow() {
       resolve,
       reject,
       '.btn-follow-follower:not(.following)',
-      button => button.classList.add('following')
+      button => button.classList.add('following'),
+      // ListHeight
     )
   ))
 }
@@ -79,7 +110,6 @@ export function attemptUnfollow() {
       button => button.classList.remove('following')
     )
   ))
-  .catch(err => console.error('Holofollowers problem', err))
 }
 
 export function attemptLike() {
@@ -118,7 +148,7 @@ export function attemptComment(commentSpin, minTime, maxTime) {
       reject,
       '.ds-comments-publish.ds-body-link.ds-comments-publish--allowed',
       () => {
-        window.location = 'https://www.holonis.com/feeds'
+        // window.location = 'https://www.holonis.com/feeds'
       }
     )
   ))

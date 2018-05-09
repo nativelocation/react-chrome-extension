@@ -13,10 +13,10 @@ class App extends Component {
     }
   }
 
-  componentWillMount() {
-    window.addEventListener('focus', this.onChange.bind(this));
-    window.addEventListener('blur', this.onChange.bind(this));
-  }
+  // componentWillMount() {
+  //   window.addEventListener('focus', this.onChange.bind(this));
+  //   window.addEventListener('blur', this.onChange.bind(this));
+  // }
 
   onChange () {
     if (this.state.actionState) {

@@ -133,14 +133,14 @@ const toggleAutomation = store => next => action => {
         })
         .catch(err => {
           console.error('Problem with Holofollower', err)
-          clearTimeout(timeout[automationType])
-          timeout[automationType] = {}
-          return next({
-            type: 'set',
-            values: {
-              [`automating${automationType}`]: false
-            }
-          })
+          // clearTimeout(timeout[automationType])
+          // timeout[automationType] = {}
+          // return next({
+          //   type: 'set',
+          //   values: {
+          //     [`automating${automationType}`]: false
+          //   }
+          // })
         })
       }
     }, timeoutSeconds * 1000)
