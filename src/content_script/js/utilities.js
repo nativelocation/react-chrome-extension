@@ -1,16 +1,18 @@
 import Spinner from 'node-spintax'
 
-const worker = () => {
-  setTimeout(() => {
-    postMessage(1);
-  }, 1000);
-}
+// const worker = () => {
+//   self.onmessage = function(event) {
+//     setTimeout(() => {
+//       postMessage(1);
+//     }, 1000);
+//   }
+// }
 
-let code = worker.toString();
-code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
+// let code = worker.toString();
+// code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
 
-const blob = new Blob([code], {type: "application/javascript"});
-const myWorker = new Worker(URL.createObjectURL(blob));
+// const blob = new Blob([code], {type: "application/javascript"});
+// const myWorker = new Worker(URL.createObjectURL(blob));
 
 const TIMEOUT_LOAD_DATA = 1000
 const ATTEMPT_LIMIT = 1000
@@ -51,11 +53,13 @@ function clickFollowButton(resolve, reject, className, modButton, listHeight = 0
   let activeList = document.querySelector('.tab-pane.active > .w-modal-follow-list')
 
   if (!button && (parseInt(listHeight) !== parseInt(activeList.scrollHeight))) {
-    activeList.scrollTop = activeList.scrollHeight
-    myWorker.onmessage = function(event) {
-      clickFollowButton.bind(this, resolve, reject, className, modButton, activeList.scrollHeight, attempt+1)
-    };
-    // setTimeout(clickFollowButton.bind(this, resolve, reject, className, modButton, activeList.scrollHeight, attempt+1), 800)
+    activeList.scrollTop = activeList.scrollHeight + 600
+    console.log('here', activeList.scrollHeight)
+    // myWorker.onmessage = function(event) {
+      // clickFollowButton.bind(this, resolve, reject, className, modButton, activeList.scrollHeight, attempt+1)
+    // };
+    // myWorker.postMessage(1)
+    setTimeout(clickFollowButton.bind(this, resolve, reject, className, modButton, activeList.scrollHeight, attempt+1), 2000)
     // setTimeout(function() { console.log('buttons', buttons, WHOLE_BUTTONS); WHOLE_BUTTONS = buttons.length }, 1000)
     return resolve()
   } else if (button) {
