@@ -1,22 +1,6 @@
 import Spinner from 'node-spintax'
 
-// const worker = () => {
-//   self.onmessage = function(event) {
-//     setTimeout(() => {
-//       postMessage(1);
-//     }, 1000);
-//   }
-// }
-
-// let code = worker.toString();
-// code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
-
-// const blob = new Blob([code], {type: "application/javascript"});
-// const myWorker = new Worker(URL.createObjectURL(blob));
-
 const TIMEOUT_LOAD_DATA = 1000
-const ATTEMPT_LIMIT = 1000
-let WHOLE_BUTTONS = 0
 
 function openFollowTabs(resolve, reject) {
   if (document.querySelector('.followers-tabs')) return resolve()
@@ -41,26 +25,18 @@ function openCommentTabs(resolve, reject) {
   setTimeout(resolve, TIMEOUT_LOAD_DATA)
 }
 
-function clickFollowButton(resolve, reject, className, modButton, listHeight = 0, attempt = 0) {
+function clickFollowButton(resolve, reject, className, modButton, active, listHeight = 0, attempt = 0) {
   let buttons = document.querySelectorAll('.btn-follow-follower')
-  // console.log('WHOLE_BUTTONS', WHOLE_BUTTONS, buttons.length)
-  // if (buttons.length == WHOLE_BUTTONS) {
-  //   console.log('second', buttons, buttons.length, WHOLE_BUTTONS)
-  //   WHOLE_BUTTONS = 0
-  //   return reject()
-  // }
+
   let button = document.querySelectorAll(className)[0]
   let activeList = document.querySelector('.tab-pane.active > .w-modal-follow-list')
-
-  if (!button && (parseInt(listHeight) !== parseInt(activeList.scrollHeight))) {
-    activeList.scrollTop = activeList.scrollHeight + 600
-    console.log('here', activeList.scrollHeight)
-    // myWorker.onmessage = function(event) {
-      // clickFollowButton.bind(this, resolve, reject, className, modButton, activeList.scrollHeight, attempt+1)
-    // };
-    // myWorker.postMessage(1)
-    setTimeout(clickFollowButton.bind(this, resolve, reject, className, modButton, activeList.scrollHeight, attempt+1), 2000)
-    // setTimeout(function() { console.log('buttons', buttons, WHOLE_BUTTONS); WHOLE_BUTTONS = buttons.length }, 1000)
+  if (active) {
+    activeList.scrollTop = activeList.scrollHeight
+    console.log('here1', activeList.scrollHeight)
+    return resolve()
+  } else if (!button && (parseInt(listHeight) !== parseInt(activeList.scrollHeight))) {
+    activeList.scrollTop = activeList.scrollHeight
+    console.log('here2', activeList.scrollHeight)
     return resolve()
   } else if (button) {
     let position = button.getBoundingClientRect()
@@ -85,7 +61,8 @@ function clickPublishButton(resolve, reject, className, callback) {
   return resolve()
 }
 
-export function attemptFollow() {
+export function attemptFollow(active) {
+  console.log('3', active)
   return new Promise(openFollowTabs)
   .then(() => {
     document.querySelectorAll('.nav-tabs a')[0].click()
@@ -96,6 +73,7 @@ export function attemptFollow() {
       reject,
       '.btn-follow-follower:not(.following)',
       button => button.classList.add('following'),
+      active
       // ListHeight
     )
   ))

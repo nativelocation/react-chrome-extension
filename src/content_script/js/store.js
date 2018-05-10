@@ -9,18 +9,17 @@ import {
   attemptComment
 } from './utilities'
 
+let timeoutSeconds = 1000
 const workers = () => {
   onmessage = function(event) {
     setTimeout(() => {
-      postMessage(1);
-    }, 1000);
+      postMessage(1)
+    }, 1000)
   }
 }
-
-let code = workers.toString();
-code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
-
-const blob = new Blob([code], {type: "application/javascript"});
+let code = workers.toString()
+code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"))
+const blob = new Blob([code], {type: "application/javascript"})
 
 const automations = {
   attemptFollow,
@@ -42,52 +41,42 @@ const defaultState = {
   automatingFollow:         false,
   automatingUnfollow:       false,
   automatingLike:           false,
-  automatingComment:        false
+  automatingComment:        false,
+  active:                   true,
+  fullLoad:                 false
 }
 
 function reducer(state = defaultState, action) {
   let newState = Object.assign({}, state)
-
   if (action.type == 'set') {
     newState = Object.assign(newState, action.values)
   }
-
   return newState
 }
-
 let timeout = {}
 
-// const myWorker = new Worker(URL.createObjectURL(blob));
-
 const toggleAutomation = store => next => action => {
-  
-  // if (action.type != 'automate.follow' && action.type != 'automate.unfollow') {
-  //   return next(action)
-  // }
-
   let automationType = ''
-
   switch(action.type) {
     case 'automate.follow':
       automationType = 'Follow'
-      break;
+      break
     case 'automate.unfollow':
       automationType = 'Unfollow'
-      break;
+      break
     case 'automate.like':
       automationType = 'Like'
-      break;
+      break
     case 'automate.comment':
       automationType = 'Comment'
-      break;
+      break
     default:
       return next(action)
   }
 
   if (timeout['Follow']) {
-    // clearTimeout(timeout['Follow'])
     timeout['Follow'].terminate()
-    timeout['Like'] = undefined
+    timeout['Follow'] = undefined
     timeout = {}
     return next({
       type: 'set',
@@ -97,7 +86,6 @@ const toggleAutomation = store => next => action => {
     })
   }
   if (timeout['Unfollow']) {
-    // clearTimeout(timeout['Unfollow'])
     timeout['Unfollow'].terminate()
     timeout['Unfollow'] = undefined
     timeout = {}
@@ -109,7 +97,6 @@ const toggleAutomation = store => next => action => {
     })
   }
   if (timeout['Like']) {
-    // clearTimeout(timeout['Like'])
     timeout['Like'].terminate()
     timeout['Like'] = undefined
     timeout = {}
@@ -121,7 +108,6 @@ const toggleAutomation = store => next => action => {
     })
   }
   if (timeout['Comment']) {
-    // clearTimeout(timeout['Comment'])
     timeout['Comment'].terminate()
     timeout['Comment'] = undefined
     timeout = {}
@@ -133,11 +119,10 @@ const toggleAutomation = store => next => action => {
     })
   }
 
-  // stopLoop()
-  let ccount = 0;
+  let state = store.getState()
   timeout[automationType] = new Worker(URL.createObjectURL(blob))
-
   timeout[automationType].onmessage = function(event) {
+    timeoutSeconds = ((Math.random() * (state[`user${automationType}MaxTime`] - state[`user${automationType}MinTime`])) + state[`user${automationType}MinTime`]) * 1000
     if (automationType === 'Comment') {
       automations[`attempt${automationType}`](state.userCommentContent, userCommentMinTime, userCommentMaxTime)
       .then(() => {
@@ -145,41 +130,18 @@ const toggleAutomation = store => next => action => {
       })
     } else if (automationType === 'Like') {
       automations[`attempt${automationType}`]()
-      // automationLoop()
-      timeout[automationType].postMessage(1)
+      timeout[automationType].postMessage(timeoutSeconds)
     } else {
-      automations[`attempt${automationType}`]()
+      automations[`attempt${automationType}`](state['active'])
       .then(() => {
-        // automationLoop()
-        ccount++
-        console.log(ccount)
-        timeout[automationType].postMessage(1)
+        timeout[automationType].postMessage(timeoutSeconds)
       })
       .catch(err => {
         console.error('Problem with Holofollower', err)
-        // clearTimeout(timeout[automationType])
-        // timeout[automationType] = {}
-        // return next({
-        //   type: 'set',
-        //   values: {
-        //     [`automating${automationType}`]: false
-        //   }
-        // })
       })
     }
   }
-  // function automationLoop() {
-  //   let state = store.getState()
-
-  //   let timeoutSeconds = (Math.random() * (state[`user${automationType}MaxTime`] - state[`user${automationType}MinTime`])) + state[`user${automationType}MinTime`]
-  //   console.log('here')
-
-  //   timeout[automationType].postMessage(1)
-  // }
-
-  // automationLoop()
-  timeout[automationType].postMessage(1)
-
+  timeout[automationType].postMessage(timeoutSeconds)
   return next({
     type: 'set',
     values: {

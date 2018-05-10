@@ -13,17 +13,41 @@ class App extends Component {
     }
   }
 
-  // componentWillMount() {
-  //   window.addEventListener('focus', this.onChange.bind(this));
-  //   window.addEventListener('blur', this.onChange.bind(this));
-  // }
+  componentWillMount() {
+    window.addEventListener('focus', this.onFocus.bind(this));
+    window.addEventListener('blur', this.onBlur.bind(this));
+  }
 
-  onChange () {
-    if (this.state.actionState) {
-      this.props.dispatch({
-        type: this.state.actionType
-      })
-    }
+  onFocus () {
+    console.log('onFocus')
+    this.props.dispatch({
+      type: 'set',
+      values: {
+        ['active']: true
+      }
+    })
+    this.props.dispatch({
+      type: this.state.actionType
+    })
+    this.props.dispatch({
+      type: this.state.actionType
+    })
+  }
+
+  onBlur () {
+    console.log('onBlur')
+    this.props.dispatch({
+      type: 'set',
+      values: {
+        ['active']: false
+      }
+    })
+    this.props.dispatch({
+      type: this.state.actionType
+    })
+    this.props.dispatch({
+      type: this.state.actionType
+    })
   }
 
   onSetState (type) {
