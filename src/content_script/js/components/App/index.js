@@ -14,6 +14,11 @@ class App extends Component {
   }
 
   componentWillMount() {
+    if (localStorage.getItem('Following') === null) {
+      localStorage.setItem('Following', JSON.stringify({
+        users: []
+      }))
+    }
     window.addEventListener('focus', this.onFocus.bind(this));
     window.addEventListener('blur', this.onBlur.bind(this));
   }
