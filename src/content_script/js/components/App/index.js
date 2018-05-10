@@ -24,7 +24,6 @@ class App extends Component {
   }
 
   onFocus () {
-    console.log('onFocus')
     this.props.dispatch({
       type: 'set',
       values: {
@@ -40,7 +39,6 @@ class App extends Component {
   }
 
   onBlur () {
-    console.log('onBlur')
     this.props.dispatch({
       type: 'set',
       values: {

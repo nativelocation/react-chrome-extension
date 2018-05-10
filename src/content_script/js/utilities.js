@@ -2,6 +2,8 @@ import Spinner from 'node-spintax'
 
 const TIMEOUT_LOAD_DATA = 1000
 let LOCALDB_FOLLOW = ''
+let followButtons = 0
+let counts = '1'
 
 function openFollowTabs(resolve, reject) {
     if (document.querySelector('.followers-tabs')) return resolve()
@@ -27,35 +29,29 @@ function openCommentTabs(resolve, reject) {
 }
 
 function clickFollowButton(resolve, reject, className, modButton, active, listHeight = 0, attempt = 0) {
-    // let buttons = document.querySelectorAll('.btn-follow-follower')
     let buttons = document.querySelectorAll(className)
     let button = buttons[0]
     let activeList = document.querySelector('.tab-pane.active > .w-modal-follow-list')
-
-    if (active || !button) {
+    if ((active || !button) && (parseInt(counts) > parseInt(followButtons))) {
         activeList.scrollTop = activeList.scrollHeight
-        if (LOCALDB_FOLLOW === '') {
-            LOCALDB_FOLLOW = JSON.parse(localStorage.getItem('Following'))
-        }
-        console.log(LOCALDB_FOLLOW)
-        console.log(JSON.stringify(LOCALDB_FOLLOW))
-        localStorage.setItem('Following', JSON.stringify(LOCALDB_FOLLOW))
+        counts = document.querySelectorAll('.hide-scroll .followers-tabs .active a span.ng-binding')[0].textContent
+        counts = counts.substring(1, counts.length - 1)
+        followButtons = document.querySelectorAll('.btn-follow-follower').length
         return resolve()
     } else if (button) {
         let wrapElement = button.parentElement.querySelector('.followers-info-wrapper .name.ds-space-name')
         let userLink = wrapElement.getAttribute('href')
         let username = wrapElement.querySelector('.ds-space-name-container .ds-space-name-text').textContent
+        if (LOCALDB_FOLLOW === '') {
+            LOCALDB_FOLLOW = JSON.parse(localStorage.getItem('Following'))
+        }
         let users = LOCALDB_FOLLOW.users
-        console.log(users)
-
         users = users.concat([{
             profileLink: userLink,
             username: username
         }])
-        console.log(users)
         LOCALDB_FOLLOW.users = users
-        console.log(LOCALDB_FOLLOW)
-
+        localStorage.setItem('Following', JSON.stringify(LOCALDB_FOLLOW))
         let position = button.getBoundingClientRect()
         if (window.innerHeight < position.y || position.y < 0) {
             activeList.scrollTop = activeList.scrollTop + position.y - 200
