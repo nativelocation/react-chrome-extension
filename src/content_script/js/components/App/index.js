@@ -14,16 +14,43 @@ class App extends Component {
   }
 
   componentWillMount() {
-    window.addEventListener('focus', this.onChange.bind(this));
-    window.addEventListener('blur', this.onChange.bind(this));
+    if (localStorage.getItem('Following') === null) {
+      localStorage.setItem('Following', JSON.stringify({
+        users: []
+      }))
+    }
+    window.addEventListener('focus', this.onFocus.bind(this));
+    window.addEventListener('blur', this.onBlur.bind(this));
   }
 
-  onChange () {
-    if (this.state.actionState) {
-      this.props.dispatch({
-        type: this.state.actionType
-      })
-    }
+  onFocus () {
+    this.props.dispatch({
+      type: 'set',
+      values: {
+        ['active']: true
+      }
+    })
+    this.props.dispatch({
+      type: this.state.actionType
+    })
+    this.props.dispatch({
+      type: this.state.actionType
+    })
+  }
+
+  onBlur () {
+    this.props.dispatch({
+      type: 'set',
+      values: {
+        ['active']: false
+      }
+    })
+    this.props.dispatch({
+      type: this.state.actionType
+    })
+    this.props.dispatch({
+      type: this.state.actionType
+    })
   }
 
   onSetState (type) {
