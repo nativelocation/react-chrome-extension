@@ -100,7 +100,7 @@ class OverlayAutoLike extends Component {
             <button onClick={() => this.beginLike(props)}>
                 {props.automatingLike ? 'Stop autoLike' : 'Begin automatically Like'}
             </button>
-            <div style={{ height: '20px' }}></div>
+            {/* <div style={{ height: '20px' }}></div>
             <label>
                 <input
                     value={props.userCommentMinTime}
@@ -130,7 +130,7 @@ class OverlayAutoLike extends Component {
             </label>
             <button onClick={() => this.beginComment(props)}>
                 {props.automatingComment ? 'Stop autoComment' : 'Begin automatically Comment'}
-            </button>
+            </button> */}
         </div>
         )
     }
