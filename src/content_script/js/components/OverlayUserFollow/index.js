@@ -61,8 +61,9 @@ class OverlayUserFollow extends Component {
                 />
                 Maximum wait seconds
             </label>
-            <button onClick={() => this.beginFollowing(props)}>
-                {props.automatingFollow ? 'Stop following' : 'Begin automatically following'}
+            <button onClick={props.followlimitEnable ? () => {} : () => this.beginFollowing(props)}>
+                {props.followlimitEnable ? () => {}
+                    : props.automatingFollow ? 'Stop following' : 'Begin automatically following'}
             </button>
         </div>
         )

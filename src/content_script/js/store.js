@@ -5,8 +5,7 @@ import {
 import {
     attemptFollow,
     attemptUnfollow,
-    attemptLike,
-    attemptComment
+    attemptLike
 } from './utilities'
 
 let timeoutSeconds = 1000
@@ -24,8 +23,7 @@ const blob = new Blob([code], {type: "application/javascript"})
 const automations = {
     attemptFollow,
     attemptUnfollow,
-    attemptLike,
-    attemptComment
+    attemptLike
 }
 
 const defaultState = {
@@ -35,20 +33,18 @@ const defaultState = {
     userUnfollowMaxTime:      1,
     userLikeMinTime:          1,
     userLikeMaxTime:          1,
-    userCommentMinTime:       1,
-    userCommentMaxTime:       1,
-    userCommentContent:       '',
     automatingFollow:         false,
     automatingUnfollow:       false,
     automatingLike:           false,
-    automatingComment:        false,
     active:                   true,
-    fullLoad:                 false
+    fullLoad:                 false,
+    likelimitEnable:          false,
+    followlimitEnable:        false
 }
 
 function reducer(state = defaultState, action) {
     let newState = Object.assign({}, state)
-    if (action.type == 'set') {
+    if (action.type == 'set' || action.type == 'likelimit'  || action.type == 'followlimit') {
         newState = Object.assign(newState, action.values)
     }
     return newState
@@ -67,8 +63,11 @@ const toggleAutomation = store => next => action => {
         case 'automate.like':
             automationType = 'Like'
             break
-        case 'automate.comment':
-            automationType = 'Comment'
+        case 'likelimit':
+            next(action)
+            break
+        case 'followlimit':
+            next(action)
             break
         default:
             return next(action)
@@ -107,31 +106,33 @@ const toggleAutomation = store => next => action => {
             }
         })
     }
-    if (timeout['Comment']) {
-        timeout['Comment'].terminate()
-        timeout['Comment'] = undefined
-        timeout = {}
-        return next({
-            type: 'set',
-            values: {
-                ['automatingComment']: false
-            }
-        })
-    }
 
     let state = store.getState()
     timeout[automationType] = new Worker(URL.createObjectURL(blob))
     timeout[automationType].onmessage = function(event) {
         timeoutSeconds = ((Math.random() * (state[`user${automationType}MaxTime`] - state[`user${automationType}MinTime`])) + state[`user${automationType}MinTime`]) * 1000
-        if (automationType === 'Comment') {
-            automations[`attempt${automationType}`](state.userCommentContent, userCommentMinTime, userCommentMaxTime)
-            .then(() => {
-                // automationLoop()
-            })
-        } else if (automationType === 'Like') {
-            automations[`attempt${automationType}`](state['active'])
-            .then(() => {
+        if (automationType === 'Like') {
+            automations[`attempt${automationType}`](state['active'], next)
+            .then((e) => {
+                console.log('then', e)
                 timeout[automationType].postMessage(timeoutSeconds)
+            })
+            .catch(err => {
+                next({
+                    type: 'likelimit',
+                    values: {
+                        ['likelimitEnable']: true
+                    }
+                })
+                timeout['Like'].terminate()
+                timeout['Like'] = undefined
+                timeout = {}
+                return next({
+                    type: 'set',
+                    values: {
+                        ['automatingLike']: false
+                    }
+                })
             })
         } else {
             automations[`attempt${automationType}`](state['active'])
@@ -139,7 +140,21 @@ const toggleAutomation = store => next => action => {
                 timeout[automationType].postMessage(timeoutSeconds)
             })
             .catch(err => {
-                console.error('Problem with Holofollower', err)
+                next({
+                    type: 'followlimit',
+                    values: {
+                        ['followlimitEnable']: true
+                    }
+                })
+                timeout['Follow'].terminate()
+                timeout['Follow'] = undefined
+                timeout = {}
+                return next({
+                    type: 'set',
+                    values: {
+                        ['automatingFollow']: false
+                    }
+                })
             })
         }
     }
