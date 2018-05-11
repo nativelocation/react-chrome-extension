@@ -7,7 +7,7 @@ import store from './store'
 import css from '../styles/style.css'
 
 render((
-  <Provider store={store}>
-    <App />
-  </Provider>
+    <Provider store={store}>
+        <App />
+    </Provider>
 ), document.body)

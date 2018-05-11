@@ -4,77 +4,77 @@ import Overlay from '../Overlay'
 
 class App extends Component {
 
-  constructor() {
+constructor() {
     super()
     this.state = {
-      showOverlay: false,
-      actionState: false,
-      actionType: ''
+        showOverlay: false,
+        actionState: false,
+        actionType: ''
     }
-  }
+}
 
-  componentWillMount() {
+componentWillMount() {
     if (localStorage.getItem('Following') === null) {
-      localStorage.setItem('Following', JSON.stringify({
-        users: []
-      }))
+        localStorage.setItem('Following', JSON.stringify({
+            users: []
+        }))
     }
     window.addEventListener('focus', this.onFocus.bind(this));
     window.addEventListener('blur', this.onBlur.bind(this));
-  }
+}
 
-  onFocus () {
+onFocus () {
     this.props.dispatch({
-      type: 'set',
-      values: {
-        ['active']: true
-      }
+        type: 'set',
+        values: {
+            ['active']: true
+        }
     })
     this.props.dispatch({
-      type: this.state.actionType
+        type: this.state.actionType
     })
     this.props.dispatch({
-      type: this.state.actionType
+        type: this.state.actionType
     })
-  }
+}
 
-  onBlur () {
+onBlur () {
     this.props.dispatch({
-      type: 'set',
-      values: {
-        ['active']: false
-      }
+        type: 'set',
+        values: {
+            ['active']: false
+        }
     })
     this.props.dispatch({
-      type: this.state.actionType
+        type: this.state.actionType
     })
     this.props.dispatch({
-      type: this.state.actionType
+        type: this.state.actionType
     })
-  }
+}
 
-  onSetState (type) {
+onSetState (type) {
     this.setState({
-      actionState: !this.state.actionState,
-      actionType: type
+        actionState: !this.state.actionState,
+        actionType: type
     })
-  }
+}
 
-  render(props, state) {
+render(props, state) {
     return (
-      <div
-        className='holofollowers-wrap'
-        onMouseLeave={() => this.setState({ showOverlay: false }) }>
         <div
-          className='holofollowers-activate-panel'
-          onMouseEnter={() => this.setState({ showOverlay: true }) }
-        >
-          F
+            className='holofollowers-wrap'
+            onMouseLeave={() => this.setState({ showOverlay: false }) }>
+            <div
+                className='holofollowers-activate-panel'
+                onMouseEnter={() => this.setState({ showOverlay: true }) }
+            >
+                F
+            </div>
+            { state.showOverlay && <Overlay onSet={this.onSetState.bind(this)} /> }
         </div>
-        { state.showOverlay && <Overlay onSet={this.onSetState.bind(this)} /> }
-      </div>
-    )
-  }
+        )
+    }
 }
 
 export default connect(state=>state)(App)
