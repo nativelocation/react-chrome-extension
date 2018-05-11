@@ -17,18 +17,6 @@ function openFollowTabs(resolve, reject) {
     setTimeout(resolve, TIMEOUT_LOAD_DATA)
 }
 
-function openCommentTabs(resolve, reject) {
-    if (document.querySelector('.ds-comment-input.ds-form-wrapper.ng-isolate-scope.ng-valid .ds-textarea-wrapper .ds-textarea-container .ds-textarea.ds-text')) return resolve()
-
-    let commentClassName = '.ds-engagement.ng-isolate-scope:not(.ng-hide) div .ds-engagement-icon.dsicon-comment'
-    let commentsButton = document.querySelectorAll(commentClassName)
-    if (!commentsButton.length) return reject()
-    commentsButton = commentsButton[0]
-    if (!commentsButton) return reject()
-    commentsButton.click()
-    setTimeout(resolve, TIMEOUT_LOAD_DATA)
-}
-
 function clickFollowButton(resolve, reject, className, modButton, active, listHeight = 0, attempt = 0) {
     let buttons = document.querySelectorAll(className)
     let button = buttons[0]
@@ -131,38 +119,4 @@ export function attemptLike(active) {
             return resolve()
         }
     })
-}
-
-export function attemptComment(commentSpin, minTime, maxTime) {
-    return new Promise(openCommentTabs)
-    .then(() => new Promise(
-        (resolve, reject) => {
-        let spinner = new Spinner(commentSpin)
-        let comment = spinner.unspinRandom(1);
-        console.log(comment)
-        let textContainer = document.querySelector('.ds-comment-input.ds-form-wrapper.ng-isolate-scope.ng-valid .ds-textarea-wrapper .ds-textarea-container .ds-textarea.ds-text')
-        console.log(textContainer)
-        
-        textContainer.addEventListener('input', function() {
-            textContainer.innerHTML = `<p>${comment[0]}</p>`
-        })
-        let event = new Event('input', {
-            'bubbles': true,
-            'cancelable': true
-        })
-        textContainer.dispatchEvent(event)
-        return resolve()
-        }
-    ))
-    .then(() => new Promise(
-        (resolve, reject) => clickPublishButton(
-        resolve,
-        reject,
-        '.ds-comments-publish.ds-body-link.ds-comments-publish--allowed',
-        () => {
-            // window.location = 'https://www.holonis.com/feeds'
-        }
-        )
-    ))
-    .catch(err => console.error('Holofollowers problem', err))
 }

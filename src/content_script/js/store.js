@@ -5,8 +5,7 @@ import {
 import {
     attemptFollow,
     attemptUnfollow,
-    attemptLike,
-    attemptComment
+    attemptLike
 } from './utilities'
 
 let timeoutSeconds = 1000
@@ -24,8 +23,7 @@ const blob = new Blob([code], {type: "application/javascript"})
 const automations = {
     attemptFollow,
     attemptUnfollow,
-    attemptLike,
-    attemptComment
+    attemptLike
 }
 
 const defaultState = {
@@ -35,13 +33,9 @@ const defaultState = {
     userUnfollowMaxTime:      1,
     userLikeMinTime:          1,
     userLikeMaxTime:          1,
-    userCommentMinTime:       1,
-    userCommentMaxTime:       1,
-    userCommentContent:       '',
     automatingFollow:         false,
     automatingUnfollow:       false,
     automatingLike:           false,
-    automatingComment:        false,
     active:                   true,
     fullLoad:                 false
 }
@@ -66,9 +60,6 @@ const toggleAutomation = store => next => action => {
             break
         case 'automate.like':
             automationType = 'Like'
-            break
-        case 'automate.comment':
-            automationType = 'Comment'
             break
         default:
             return next(action)
@@ -107,28 +98,12 @@ const toggleAutomation = store => next => action => {
             }
         })
     }
-    if (timeout['Comment']) {
-        timeout['Comment'].terminate()
-        timeout['Comment'] = undefined
-        timeout = {}
-        return next({
-            type: 'set',
-            values: {
-                ['automatingComment']: false
-            }
-        })
-    }
 
     let state = store.getState()
     timeout[automationType] = new Worker(URL.createObjectURL(blob))
     timeout[automationType].onmessage = function(event) {
         timeoutSeconds = ((Math.random() * (state[`user${automationType}MaxTime`] - state[`user${automationType}MinTime`])) + state[`user${automationType}MinTime`]) * 1000
-        if (automationType === 'Comment') {
-            automations[`attempt${automationType}`](state.userCommentContent, userCommentMinTime, userCommentMaxTime)
-            .then(() => {
-                // automationLoop()
-            })
-        } else if (automationType === 'Like') {
+        if (automationType === 'Like') {
             automations[`attempt${automationType}`](state['active'])
             .then(() => {
                 timeout[automationType].postMessage(timeoutSeconds)
