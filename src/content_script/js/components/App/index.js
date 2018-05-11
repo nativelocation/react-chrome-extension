@@ -19,6 +19,11 @@ componentWillMount() {
             users: []
         }))
     }
+    if (localStorage.getItem('Like') === null) {
+        localStorage.setItem('Like', JSON.stringify({
+            link: []
+        }))
+    }
     window.addEventListener('focus', this.onFocus.bind(this));
     window.addEventListener('blur', this.onBlur.bind(this));
 }

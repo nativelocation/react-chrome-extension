@@ -2,6 +2,7 @@ import Spinner from 'node-spintax'
 
 const TIMEOUT_LOAD_DATA = 1000
 let LOCALDB_FOLLOW = ''
+let LOCALDB_LIKE = ''
 let followButtons = 0
 let counts = '1'
 
@@ -117,6 +118,14 @@ export function attemptLike(active) {
             let position = button.getBoundingClientRect()
             let positionY = window.scrollY + position.top - 100
             window.scrollTo(0, positionY)
+            let likelink = button.parentElement.parentElement.parentElement.querySelectorAll('.tile-content .tile-content-wrapper a.tile-general-link')[0].getAttribute('href')
+            if (LOCALDB_LIKE === '') {
+                LOCALDB_LIKE = JSON.parse(localStorage.getItem('Like'))
+            }
+            let link = LOCALDB_LIKE.link
+            link = link.concat([likelink])
+            LOCALDB_LIKE.link = link
+            localStorage.setItem('Like', JSON.stringify(LOCALDB_LIKE))
             button.click()
             button.classList.add('ds-engagement-icon--liked')
             return resolve()
