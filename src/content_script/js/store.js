@@ -129,8 +129,10 @@ const toggleAutomation = store => next => action => {
                 // automationLoop()
             })
         } else if (automationType === 'Like') {
-            automations[`attempt${automationType}`]()
-            timeout[automationType].postMessage(timeoutSeconds)
+            automations[`attempt${automationType}`](state['active'])
+            .then(() => {
+                timeout[automationType].postMessage(timeoutSeconds)
+            })
         } else {
             automations[`attempt${automationType}`](state['active'])
             .then(() => {
