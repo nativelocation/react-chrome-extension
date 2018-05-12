@@ -39,7 +39,8 @@ const defaultState = {
     active:                   true,
     fullLoad:                 false,
     likelimitEnable:          false,
-    followlimitEnable:        false
+    followlimitEnable:        false,
+    COUNT_LIMIT:              500
 }
 
 function reducer(state = defaultState, action) {
@@ -112,7 +113,7 @@ const toggleAutomation = store => next => action => {
     timeout[automationType].onmessage = function(event) {
         timeoutSeconds = ((Math.random() * (state[`user${automationType}MaxTime`] - state[`user${automationType}MinTime`])) + state[`user${automationType}MinTime`]) * 1000
         if (automationType === 'Like') {
-            automations[`attempt${automationType}`](state['active'], next)
+            automations[`attempt${automationType}`](state['active'], state['COUNT_LIMIT'])
             .then((e) => {
                 console.log('then', e)
                 timeout[automationType].postMessage(timeoutSeconds)
@@ -135,7 +136,7 @@ const toggleAutomation = store => next => action => {
                 })
             })
         } else {
-            automations[`attempt${automationType}`](state['active'])
+            automations[`attempt${automationType}`](state['active'], state['COUNT_LIMIT'])
             .then(() => {
                 timeout[automationType].postMessage(timeoutSeconds)
             })

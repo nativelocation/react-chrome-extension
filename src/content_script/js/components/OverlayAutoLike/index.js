@@ -56,9 +56,8 @@ class OverlayAutoLike extends Component {
                     />
                     Maximum wait seconds
                 </label>
-                <button onClick={props.likelimitEnable ? () => {} : () => this.beginLike(props)}>
-                    {props.likelimitEnable ? 'Please update Pro version'
-                        : props.automatingLike ? 'Stop autoLike' : 'Begin automatically Like'}
+                <button onClick={() => this.beginLike(props)}>
+                    {props.automatingLike ? 'Stop autoLike' : 'Begin automatically Like'}
                 </button>
             </div>
         )

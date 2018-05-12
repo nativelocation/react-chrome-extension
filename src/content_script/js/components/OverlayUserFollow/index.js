@@ -42,30 +42,29 @@ class OverlayUserFollow extends Component {
 
     render(props, state) {
         return (
-        <div>
-            <label>
-                <input
-                    value={props.userFollowMinTime}
-                    onInput={event => this.changeMinTime(props, event.target.value)}
-                    onChange={event => this.setState()}
-                    type='number'
-                />
-                Minimum wait seconds
-            </label>
-            <label>
-                <input
-                    value={props.userFollowMaxTime}
-                    onInput={event => this.changeMaxTime(props, event.target.value)}
-                    onChange={event => this.setState()}
-                    type='number'
-                />
-                Maximum wait seconds
-            </label>
-            <button onClick={props.followlimitEnable ? () => {} : () => this.beginFollowing(props)}>
-                {props.followlimitEnable ? () => {}
-                    : props.automatingFollow ? 'Stop following' : 'Begin automatically following'}
-            </button>
-        </div>
+            <div>
+                <label>
+                    <input
+                        value={props.userFollowMinTime}
+                        onInput={event => this.changeMinTime(props, event.target.value)}
+                        onChange={event => this.setState()}
+                        type='number'
+                    />
+                    Minimum wait seconds
+                </label>
+                <label>
+                    <input
+                        value={props.userFollowMaxTime}
+                        onInput={event => this.changeMaxTime(props, event.target.value)}
+                        onChange={event => this.setState()}
+                        type='number'
+                    />
+                    Maximum wait seconds
+                </label>
+                <button onClick={() => this.beginFollowing(props)}>
+                    {props.automatingFollow ? 'Stop following' : 'Begin automatically following'}
+                </button>
+            </div>
         )
     }
 }

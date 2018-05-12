@@ -1,45 +1,46 @@
 .holofollowers-wrap {
-  position: fixed;
-  bottom: 1rem;
-  left: 1rem;
-  z-index: 9999999999;
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: 9999999999;
 }
 
 .holofollowers-activate-panel {
-  position: fixed;
-  min-width: 5rem;
-  bottom: 1rem;
-  background-color: white;
-  border-radius: 1rem;
-  color: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 3rem;
-  border: 1px solid black;
-  box-shadow: 0.3rem 0.3rem 1rem rgba(0,0,0,0.3);
+    padding: 5px;
+    position: fixed;
+    min-width: 5rem;
+    bottom: 1rem;
+    background-color: white;
+    border-radius: 1rem;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    border: 1px solid black;
+    box-shadow: 0.3rem 0.3rem 1rem rgba(0,0,0,0.3);
 }
 
 .holofollowers-overlay {
-  position: relative;
-  bottom: 5rem;
-  background-color: white;
-  border-radius: 1rem;
-  color: black;
-  font-size: 1.5rem;
-  border: 1px solid black;
-  padding: 1rem;
-  box-shadow: 0.3rem 0.3rem 1rem rgba(0,0,0,0.3);
+    position: relative;
+    bottom: 5rem;
+    background-color: white;
+    border-radius: 1rem;
+    color: black;
+    font-size: 1.5rem;
+    border: 1px solid black;
+    padding: 1rem;
+    box-shadow: 0.3rem 0.3rem 1rem rgba(0,0,0,0.3);
 }
 
 .holofollowers-overlay > div {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .holofollowers-overlay input {
-  margin-right: 1rem;
-  padding: 0.5rem;
-  border-radius: 1rem;
-  border: 1px solid black;
+    margin-right: 1rem;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    border: 1px solid black;
 }

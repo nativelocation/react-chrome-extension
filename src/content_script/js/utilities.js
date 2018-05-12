@@ -5,7 +5,6 @@ let LOCALDB_FOLLOW = ''
 let LOCALDB_LIKE = ''
 let followButtons = 0
 let counts = '1'
-const COUNT_LIMIT = 500
 
 function openFollowTabs(resolve, reject) {
     if (document.querySelector('.followers-tabs')) return resolve()
@@ -18,7 +17,7 @@ function openFollowTabs(resolve, reject) {
     setTimeout(resolve, TIMEOUT_LOAD_DATA)
 }
 
-function clickFollowButton(resolve, reject, className, modButton, active, listHeight = 0, attempt = 0) {
+function clickFollowButton(resolve, reject, className, modButton, active, COUNT_LIMIT, listHeight = 0, attempt = 0) {
     let buttons = document.querySelectorAll(className)
     let button = buttons[0]
     let activeList = document.querySelector('.tab-pane.active > .w-modal-follow-list')
@@ -66,7 +65,7 @@ function clickPublishButton(resolve, reject, className, callback) {
     return resolve()
 }
 
-export function attemptFollow(active) {
+export function attemptFollow(active, COUNT_LIMIT) {
     return new Promise(openFollowTabs)
     .then(() => {
         document.querySelectorAll('.nav-tabs a')[0].click()
@@ -77,7 +76,8 @@ export function attemptFollow(active) {
             reject,
             '.btn-follow-follower:not(.following)',
             button => button.classList.add('following'),
-            active
+            active,
+            COUNT_LIMIT
             // ListHeight
         )
     ))
@@ -98,7 +98,7 @@ export function attemptUnfollow() {
     ))
 }
 
-export function attemptLike(active) {
+export function attemptLike(active, COUNT_LIMIT) {
     return new Promise(function(resolve, reject) {
         let buttonClassName = '.ds-engagement:not(.ng-hide) .ds-engagement-bottom .dsicon-heart.ds-engagement-icon:not(.ds-engagement-icon--liked)'
         let button = document.querySelectorAll(buttonClassName)[0]
