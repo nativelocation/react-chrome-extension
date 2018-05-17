@@ -1,5 +1,6 @@
 import { connect } from 'preact-redux'
 import { h, Component } from 'preact'
+import Portal from 'preact-portal'
 import Overlay from '../Overlay'
 
 class App extends Component {
@@ -7,9 +8,10 @@ class App extends Component {
     constructor() {
         super()
         this.state = {
-            showOverlay: false,
-            actionState: false,
-            actionType: ''
+            showOverlay     :   false,
+            handlelimit     :   false,
+            actionState     :   false,
+            actionType      :   ''
         }
     }
 
@@ -86,17 +88,49 @@ class App extends Component {
     }
 
     render(props, state) {
+
         return (
             <div
                 className='holofollowers-wrap'
-                onMouseLeave={() => this.setState({ showOverlay: false }) }>
+                onMouseLeave={() => this.setState({ showOverlay: false }) }
+            >
                 <div
                     className='holofollowers-activate-panel'
-                    onMouseEnter={(props.likelimitEnable || props.followlimitEnable) ? () => {} : () => this.setState({ showOverlay: true }) }
+                    onMouseEnter={
+                        (props.likelimitEnable || props.followlimitEnable)
+                            ? () => {}
+                            : () => this.setState({ showOverlay: true })
+                    }
+                    onClick={() => {this.setState({ handlelimit: true })}}
                 >
-                    {(props.likelimitEnable || props.followlimitEnable) ? 'Please update Pro version' : 'F'}
+                    F
                 </div>
-                { state.showOverlay && <Overlay onSet={this.onSetState.bind(this)} /> }
+                {state.showOverlay && <Overlay onSet={this.onSetState.bind(this)}/>}
+                <Portal into='body'>
+                    <div className={this.state.handlelimit ? 'holofollowers-modal open' : 'holofollowers-modal'}>
+                        <div className='backdrop' onClick={() => {this.setState({ handlelimit: false })}}/>
+                        <div className='inner'>
+                            <div className='holofollowers-text'>
+                                <span className='holofollowers-first'>YOUR TRIAL IS COMPLETE</span><br/>
+                                <span className='holofollowers-second'>PLEASE UPGRADE TO THE PRO VERSION</span><br/>
+                                <span className='holofollowers-third'>GET UNLIMITED FOLLOWING,</span><br/>
+                                <span className='holofollowers-fourth'>{`UNFOLLOWING & LIKES`}</span><br/>
+                            </div>
+                            <div className='holofollowers-button-container'>
+                                <button
+                                    className='holofollowers-button'
+                                    type='button'
+                                    onClick={() => {this.setState({ handlelimit: false })}}
+                                >
+                                    Subscribe
+                                </button>
+                            </div>
+                            <div className='holofollowers-fifth'>
+                                Only $9.99/mo Cancel Anytime
+                            </div>
+                        </div>
+                    </div>
+                </Portal>
             </div>
         )
     }

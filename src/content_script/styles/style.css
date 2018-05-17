@@ -1,46 +1,133 @@
 .holofollowers-wrap {
-    position: fixed;
-    bottom: 1rem;
-    left: 1rem;
-    z-index: 9999999999;
+    position    : fixed;
+    bottom      : 1rem;
+    left        : 1rem;
+    z-index     : 9999999999;
 }
 
 .holofollowers-activate-panel {
-    padding: 5px;
-    position: fixed;
-    min-width: 5rem;
-    bottom: 1rem;
-    background-color: white;
-    border-radius: 1rem;
-    color: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 3rem;
-    border: 1px solid black;
-    box-shadow: 0.3rem 0.3rem 1rem rgba(0,0,0,0.3);
+    padding             : 5px;
+    position            : fixed;
+    min-width           : 5rem;
+    bottom              : 1rem;
+    background-color    : white;
+    border-radius       : 1rem;
+    color               : black;
+    display             : flex;
+    justify-content     : center;
+    align-items         : center;
+    font-size           : 3rem;
+    border              : 1px solid black;
+    box-shadow          : 0.3rem 0.3rem 1rem rgba(0,0,0,0.3);
 }
 
 .holofollowers-overlay {
-    position: relative;
-    bottom: 5rem;
-    background-color: white;
-    border-radius: 1rem;
-    color: black;
-    font-size: 1.5rem;
-    border: 1px solid black;
-    padding: 1rem;
-    box-shadow: 0.3rem 0.3rem 1rem rgba(0,0,0,0.3);
+    position            : relative;
+    bottom              : 5rem;
+    background-color    : white;
+    border-radius       : 1rem;
+    color               : black;
+    font-size           : 1.5rem;
+    border              : 1px solid black;
+    padding             : 1rem;
+    box-shadow          : 0.3rem 0.3rem 1rem rgba(0,0,0,0.3);
 }
 
 .holofollowers-overlay > div {
-    display: flex;
-    flex-direction: column;
+    display         : flex;
+    flex-direction  : column;
 }
 
 .holofollowers-overlay input {
-    margin-right: 1rem;
-    padding: 0.5rem;
-    border-radius: 1rem;
-    border: 1px solid black;
+    margin-right    : 1rem;
+    padding         : 0.5rem;
+    border-radius   : 1rem;
+    border          : 1px solid black;
+}
+
+.holofollowers-modal {
+	display: none;
+}
+
+.holofollowers-modal.open {
+	display: block;
+}
+
+.holofollowers-modal > .backdrop {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.5);
+	animation: fadeIn 300ms ease forwards 1;
+	cursor: no-drop;
+}
+
+@keyframes fadeIn {
+	0% { opacity: 0; }
+}
+
+.holofollowers-modal > .inner {
+    position: fixed;
+    z-index: 100;
+    box-sizing: border-box;
+    left: 50%;
+    top: 50%;
+    width: 60%;
+    min-height: 40%;
+    padding: 20px;
+    transform: translate(-50%, -50%);
+    background: #FFF;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: in 300ms ease forwards 1;
+    border: solid 5px;
+}
+
+@keyframes in {
+	0% { opacity:0; transform:translate(-50%, 0%) scale(0.7); }
+}
+
+.holofollowers-first {
+    font-size: 20px;
+}
+
+.holofollowers-second {
+    font-size: 30px;
+    font-weight: 900;
+}
+
+.holofollowers-third {
+    font-size: 24px;
+    font-weight: 600;;
+}
+
+.holofollowers-fourth {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.holofollowers-fifth {
+    text-align: center;
+    font-weight: 600;
+}
+
+.holofollowers-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.holofollowers-button {
+    font-size: 32px;
+    color: white;
+    font-weight: 600;
+    background: #f55;
+    padding: 20px 33px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.holofollowers-text {
+    text-align: center;
 }
