@@ -17,7 +17,7 @@ function openFollowTabs(resolve, reject) {
     setTimeout(resolve, TIMEOUT_LOAD_DATA)
 }
 
-function clickFollowButton(resolve, reject, className, modButton, active, COUNT_LIMIT, listHeight = 0, attempt = 0) {
+function clickFollowButton(resolve, reject, className, modButton, active, COUNT_LIMIT, sku, listHeight = 0, attempt = 0) {
     let buttons = document.querySelectorAll(className)
     let button = buttons[0]
     let activeList = document.querySelector('.tab-pane.active > .w-modal-follow-list')
@@ -25,7 +25,7 @@ function clickFollowButton(resolve, reject, className, modButton, active, COUNT_
         LOCALDB_FOLLOW = JSON.parse(localStorage.getItem('Following'))
     }
     let users = LOCALDB_FOLLOW.users
-    if (users.length > COUNT_LIMIT) {
+    if (users.length > COUNT_LIMIT && sku === 'free') {
         return reject()
     } else {
         if ((active || !button) && (parseInt(counts) > parseInt(followButtons))) {
@@ -65,7 +65,7 @@ function clickPublishButton(resolve, reject, className, callback) {
     return resolve()
 }
 
-export function attemptFollow(active, COUNT_LIMIT) {
+export function attemptFollow(active, COUNT_LIMIT, sku) {
     return new Promise(openFollowTabs)
     .then(() => {
         document.querySelectorAll('.nav-tabs a')[0].click()
@@ -77,7 +77,8 @@ export function attemptFollow(active, COUNT_LIMIT) {
             '.btn-follow-follower:not(.following)',
             button => button.classList.add('following'),
             active,
-            COUNT_LIMIT
+            COUNT_LIMIT,
+            sku
             // ListHeight
         )
     ))
@@ -98,7 +99,7 @@ export function attemptUnfollow() {
     ))
 }
 
-export function attemptLike(active, COUNT_LIMIT) {
+export function attemptLike(active, COUNT_LIMIT, sku) {
     return new Promise(function(resolve, reject) {
         let buttonClassName = '.ds-engagement:not(.ng-hide) .ds-engagement-bottom .dsicon-heart.ds-engagement-icon:not(.ds-engagement-icon--liked)'
         let button = document.querySelectorAll(buttonClassName)[0]
@@ -107,7 +108,7 @@ export function attemptLike(active, COUNT_LIMIT) {
             LOCALDB_LIKE = JSON.parse(localStorage.getItem('Like'))
         }
         let link = LOCALDB_LIKE.link
-        if (link.length > COUNT_LIMIT) {
+        if (link.length > COUNT_LIMIT && sku === 'free') {
             return reject()
         } else {
             if (active || !button) {

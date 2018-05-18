@@ -27,6 +27,8 @@ const automations = {
 }
 
 const defaultState = {
+    sku:                      'free',
+    licenses:                 '',
     userFollowMinTime:        1,
     userFollowMaxTime:        1,
     userUnfollowMinTime:      1,
@@ -113,7 +115,7 @@ const toggleAutomation = store => next => action => {
     timeout[automationType].onmessage = function(event) {
         timeoutSeconds = ((Math.random() * (state[`user${automationType}MaxTime`] - state[`user${automationType}MinTime`])) + state[`user${automationType}MinTime`]) * 1000
         if (automationType === 'Like') {
-            automations[`attempt${automationType}`](state['active'], state['COUNT_LIMIT'])
+            automations[`attempt${automationType}`](state['active'], state['COUNT_LIMIT'], state['sku'])
             .then((e) => {
                 console.log('then', e)
                 timeout[automationType].postMessage(timeoutSeconds)
@@ -136,7 +138,7 @@ const toggleAutomation = store => next => action => {
                 })
             })
         } else {
-            automations[`attempt${automationType}`](state['active'], state['COUNT_LIMIT'])
+            automations[`attempt${automationType}`](state['active'], state['COUNT_LIMIT'], state['sku'])
             .then(() => {
                 timeout[automationType].postMessage(timeoutSeconds)
             })

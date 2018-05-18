@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Holofollowers",
   "author": "Wyatt Arent",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automatically follow and unfollow on Holonis.",
   "content_scripts": [
     {
@@ -14,6 +14,7 @@
     "scripts": ["background_script.js"],
     "persistent": true
   },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxWMj90yN+HOINAqeg7N6dkuRs7mEsmsncWRk0c0aAoNmMfCMbFGdkQfNlMuA/ER3pOR8SKTmcRIOGBapYR7S7KN7xA9zfharsNdBGcSr9VyK18AH61y+A9kYpN8Ly47JgEgFwuY9TDXWXo8bYdmyTbrSatebnsb7gjPHEqKTuHZmiVyMCMSLnNEGuIp5llzU0Xe0EMTxHUAsWOwCC5li0EwVBJXS+TrRru86GwynERP6sQp5FID1VRgDaVU2Tk8kix2/5G7ojZLI/BtUKm6EpOlfEpBn9kWwgl0TgacO/XWqqGULpj6HZzszPBvuzXqe21GA8nICCMlvxvpfb8ytQwIDAQAB",
   "permissions": [
     "webRequest",
     "webRequestBlocking",

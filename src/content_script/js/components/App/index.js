@@ -2,6 +2,7 @@ import { connect } from 'preact-redux'
 import { h, Component } from 'preact'
 import Portal from 'preact-portal'
 import Overlay from '../Overlay'
+import '../../buy.js'
 
 class App extends Component {
 
@@ -9,9 +10,11 @@ class App extends Component {
         super()
         this.state = {
             showOverlay     :   false,
-            handlelimit     :   false,
+            handlelimit     :   true,
             actionState     :   false,
-            actionType      :   ''
+            actionType      :   '',
+            sku             :   'free',
+            licenses        :   null
         }
     }
 
@@ -35,6 +38,9 @@ class App extends Component {
                     ['followlimitEnable']: true
                 }
             })
+            this.setState({
+                handlelimit: false
+            })
         }
         let dblike = JSON.parse(localStorage.getItem('Like'))
         let link = dblike.link
@@ -45,9 +51,72 @@ class App extends Component {
                     ['likelimitEnable']: true
                 }
             })
+            this.setState({
+                handlelimit: false
+            })
         }
         window.addEventListener('focus', this.onFocus.bind(this));
         window.addEventListener('blur', this.onBlur.bind(this));
+
+        google.payments.inapp.getSkuDetails({
+            'parameters': {env: "prod"},
+            'success': this.onSkuDetails.bind(this),
+            'failure': this.onSkuDetailsFailed.bind(this)
+        })
+    }
+
+    onSkuDetails (response) {
+        let products = response.response.details.inAppProducts
+        this.setState({
+            sku: products[1].sku
+        })
+        google.payments.inapp.getPurchases({
+            'parameters': {env: "prod"},
+            'success': this.onLicenseUpdate.bind(this),
+            'failure': this.onLicenseUpdateFailed.bind(this)
+        })
+    }
+
+    onSkuDetailsFailed (response) {
+        console.log('onSkuDetailsFailed', response)
+    }
+
+    onLicenseUpdate (response) {
+        let licenses = response.response.details
+        if (licenses.length !== 0) {
+            console.log(licenses)
+            this.setState({
+                licenses: licenses[1]
+            })
+            this.props.dispatch({
+                type: 'set',
+                values: {
+                    ['sku']: this.state.sku
+                }
+            })
+            this.props.dispatch({
+                type: 'set',
+                values: {
+                    ['licenses']: licenses
+                }
+            })
+        }
+    }
+
+    onLicenseUpdateFailed (response) {
+        console.log('onLicenseUpdateFailed', response)
+    }
+
+    onPurchase (response) {
+        google.payments.inapp.getPurchases({
+            'parameters': {env: "prod"},
+            'success': this.onLicenseUpdate.bind(this),
+            'failure': this.onLicenseUpdateFailed.bind(this)
+        })
+    }
+
+    onPurchaseFailed (response) {
+        console.log('onPurchaseFailed', response)
     }
 
     onFocus () {
@@ -97,17 +166,29 @@ class App extends Component {
                 <div
                     className='holofollowers-activate-panel'
                     onMouseEnter={
-                        (props.likelimitEnable || props.followlimitEnable)
-                            ? () => {}
-                            : () => this.setState({ showOverlay: true })
+                        (props.sku !== 'free' && state.licenses)
+                            ? () => this.setState({ showOverlay: true })
+                            : (props.sku === 'free' && (props.likelimitEnable || props.followlimitEnable))
+                                ? () => {}
+                                : () => this.setState({ showOverlay: true })
                     }
-                    onClick={() => {this.setState({ handlelimit: true })}}
+                    onClick={(props.sku === 'free' && (props.likelimitEnable || props.followlimitEnable))
+                        ? () => {
+                            console.log('onClick',
+                                this.state.showOverlay,
+                                this.state.licenses,
+                                props.sku,
+                                props.likelimitEnable,
+                                props.followlimitEnable)
+                            this.setState({ handlelimit: true })}
+                        : () => {}
+                    }
                 >
                     F
                 </div>
                 {state.showOverlay && <Overlay onSet={this.onSetState.bind(this)}/>}
                 <Portal into='body'>
-                    <div className={this.state.handlelimit ? 'holofollowers-modal open' : 'holofollowers-modal'}>
+                    <div className={(this.state.handlelimit && (props.likelimitEnable || props.followlimitEnable)) ? 'holofollowers-modal open' : 'holofollowers-modal'}>
                         <div className='backdrop' onClick={() => {this.setState({ handlelimit: false })}}/>
                         <div className='inner'>
                             <div className='holofollowers-text'>
@@ -120,7 +201,15 @@ class App extends Component {
                                 <button
                                     className='holofollowers-button'
                                     type='button'
-                                    onClick={() => {this.setState({ handlelimit: false })}}
+                                    onClick={() => {
+                                        google.payments.inapp.buy({
+                                          parameters: {env: "prod"},
+                                            'sku': this.state.sku,
+                                            'success': this.onPurchase.bind(this),
+                                            'failure': this.onPurchaseFailed.bind(this)
+                                        })
+                                        this.setState({ handlelimit: false })
+                                    }}
                                 >
                                     Subscribe
                                 </button>
