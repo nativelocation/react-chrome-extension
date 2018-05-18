@@ -70,7 +70,7 @@
 
 .holofollowers-modal > .inner {
     position: fixed;
-    z-index: 100;
+    z-index: 9999999999;
     box-sizing: border-box;
     left: 50%;
     top: 50%;

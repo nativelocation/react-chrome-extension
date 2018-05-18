@@ -14,7 +14,8 @@ class App extends Component {
             actionState     :   false,
             actionType      :   '',
             sku             :   'free',
-            licenses        :   null
+            licenses        :   null,
+            reload          :   false
         }
     }
 
@@ -101,6 +102,9 @@ class App extends Component {
                 }
             })
         }
+        if (this.state.reload) {
+            window.location.reload()
+        }
     }
 
     onLicenseUpdateFailed (response) {
@@ -110,9 +114,16 @@ class App extends Component {
     onPurchase (response) {
         google.payments.inapp.getPurchases({
             'parameters': {env: "prod"},
-            'success': this.onLicenseUpdate.bind(this),
+            'success': this.onPurchaseUpdate.bind(this),
             'failure': this.onLicenseUpdateFailed.bind(this)
         })
+    }
+
+    onPurchaseUpdate (response) {
+        this.setState({
+            reload: true
+        })
+        this.onLicenseUpdate(response)
     }
 
     onPurchaseFailed (response) {
@@ -157,7 +168,7 @@ class App extends Component {
     }
 
     render(props, state) {
-
+        console.log(this.state.reload)
         return (
             <div
                 className='holofollowers-wrap'

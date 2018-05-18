@@ -31,7 +31,11 @@ function clickFollowButton(resolve, reject, className, modButton, active, COUNT_
         if ((active || !button) && (parseInt(counts) > parseInt(followButtons))) {
             activeList.scrollTop = activeList.scrollHeight
             counts = document.querySelectorAll('.hide-scroll .followers-tabs .active a span.ng-binding')[0].textContent
-            counts = counts.substring(1, counts.length - 1)
+            if (counts.substring(counts.length - 2, counts.length - 1) === 'k') {
+                counts = counts.substring(1, counts.length - 2) + '000'
+            } else {
+                counts = counts.substring(1, counts.length - 1)
+            }
             followButtons = document.querySelectorAll('.btn-follow-follower').length
             return resolve()
         } else if (button) {
