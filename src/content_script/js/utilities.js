@@ -1,8 +1,10 @@
 import Spinner from 'node-spintax'
+import _ from 'lodash'
 
 const TIMEOUT_LOAD_DATA = 1000
 let LOCALDB_FOLLOW = ''
 let LOCALDB_LIKE = ''
+let LOCALDB_COMMENT = ''
 let followButtons = 0
 let counts = '1'
 
@@ -57,16 +59,6 @@ function clickFollowButton(resolve, reject, className, modButton, active, COUNT_
         }
         return resolve()
     }
-}
-
-function clickPublishButton(resolve, reject, className, callback) {
-    let button = document.querySelectorAll(className)[0]
-    console.log(button)
-    if (button) {
-        button.click()
-        // if (callback) setTimeout(callback, TIMEOUT_LOAD_DATA)
-    }
-    return resolve()
 }
 
 export function attemptFollow(active, COUNT_LIMIT, sku) {
@@ -134,3 +126,91 @@ export function attemptLike(active, COUNT_LIMIT, sku) {
     })
 }
 
+export function attemptComment(commentSpin, active, COUNT_LIMIT, sku) {
+    let nextPromise = 0
+    return new Promise(function(resolve, reject){
+        if (document.querySelector('.ds-comment-input.ds-form-wrapper.ng-isolate-scope.ng-valid .ds-textarea-wrapper .ds-textarea-container .ds-textarea.ds-text')) return resolve()
+        let slideRoute = document.querySelectorAll('section.wrapper-feeds')[0]
+        if (LOCALDB_COMMENT === '') {
+            LOCALDB_COMMENT = JSON.parse(localStorage.getItem('Comment'))
+        }
+        let link = LOCALDB_COMMENT.link
+        if (link.length > COUNT_LIMIT && sku === 'free') {
+            return reject()
+        } else {
+            let postContainers = document.querySelectorAll('.grid-item.tile--post')
+            let commentContainers = _.filter(postContainers, (postContainer) => {
+                let hrefitem = postContainer.querySelectorAll('.wrapper-tile .tile-content .tile-content-wrapper .tile-general-link')[0].href
+                if (_.findIndex(link, (linkitem) => {
+                    if (linkitem === hrefitem) {
+                        return true
+                    }
+                }) < 0) {
+                    return true
+                }
+            })
+            if (active || commentContainers.length === 0 || !commentContainers[0]) {
+                window.scrollTo(0, slideRoute.getBoundingClientRect().height)
+                return resolve()
+            } else if (commentContainers[0]) {
+                let position = commentContainers[0].getBoundingClientRect()
+                let positionY = window.scrollY + position.top - 100
+                window.scrollTo(0, positionY)
+
+                link = link.concat([commentContainers[0].querySelectorAll('.wrapper-tile .tile-content .tile-content-wrapper .tile-general-link')[0].href])
+                LOCALDB_COMMENT.link = link
+                localStorage.setItem('Comment', JSON.stringify(LOCALDB_COMMENT))
+                let commentClassName = '.ds-engagement.ng-isolate-scope:not(.ng-hide) div .ds-engagement-icon.dsicon-comment'
+                let commentsButton = commentContainers[0].querySelectorAll(commentClassName)
+                if (commentsButton.length === 0) {
+                    return resolve()
+                }
+                commentsButton = commentsButton[0]
+                if (!commentsButton) {
+                    return resolve()
+                }
+                commentsButton.click()
+                setTimeout(function() {
+                    nextPromise = 1
+                    resolve()
+                }, 1500)
+            }
+        }
+    })
+    .then((e) => new Promise(function(resolve, reject){
+        if (nextPromise === 1) {
+            let spinner = new Spinner(commentSpin)
+            let comment = spinner.unspinRandom(1)
+            let textContainer = document.querySelector('.ds-comment-input.ds-form-wrapper.ng-isolate-scope.ng-valid .ds-textarea-wrapper .ds-textarea-container .ds-textarea.ds-text')
+            let dispatchCount = 0
+            let button = document.querySelectorAll('.ds-modal .ds-post .ds-comments .ds-comments-wrapper .ds-comments-form .ds-comments-publish')[0]
+            let closeBtn = document.querySelectorAll('.ds-modal-close.dsicon-close')[0]
+            textContainer.addEventListener('input', function(event) {
+                textContainer.innerHTML = `${comment[0]}`
+                setTimeout(function() {
+                    if (button) {
+                        button.click()
+                    }
+                    if (dispatchCount > 0) {
+                        if (closeBtn) {
+                            closeBtn.click()
+                        }
+                    }
+                    dispatchCount = 1
+                }, 500)
+            })
+            let firstEvent = new Event('input', {
+                'bubbles': true,
+                'cancelable': true
+            })
+            let secondEvent = new Event('input', {
+                'bubbles': true,
+                'cancelable': true
+            })
+            textContainer.dispatchEvent(firstEvent)
+            textContainer.dispatchEvent(secondEvent)
+            return resolve()
+        }
+        return resolve()
+    }))
+}

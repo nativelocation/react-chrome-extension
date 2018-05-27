@@ -131,3 +131,19 @@
 .holofollowers-text {
     text-align: center;
 }
+
+
+.holofollowers-button {
+    font-size: 32px;
+    color: white;
+    font-weight: 600;
+    background: #f55;
+    padding: 20px 33px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.holofollowers-button-choose {
+    pointer-events: none;
+    opacity: 0.3;
+}

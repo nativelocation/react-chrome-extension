@@ -30,6 +30,11 @@ class App extends Component {
                 link: []
             }))
         }
+        if (localStorage.getItem('Comment') === null) {
+            localStorage.setItem('Comment', JSON.stringify({
+                link: []
+            }))
+        }
         let dbfollow = JSON.parse(localStorage.getItem('Following'))
         let users = dbfollow.users
         if (users.length > this.props.COUNT_LIMIT) {
@@ -50,6 +55,19 @@ class App extends Component {
                 type: 'set',
                 values: {
                     ['likelimitEnable']: true
+                }
+            })
+            this.setState({
+                handlelimit: false
+            })
+        }
+        let dbcomment = JSON.parse(localStorage.getItem('Comment'))
+        let clink = dbcomment.link
+        if (clink.length > this.props.COUNT_LIMIT) {
+            this.props.dispatch({
+                type: 'set',
+                values: {
+                    ['commentlimitEnable']: true
                 }
             })
             this.setState({
@@ -179,17 +197,18 @@ class App extends Component {
                     onMouseEnter={
                         (props.sku !== 'free' && state.licenses)
                             ? () => this.setState({ showOverlay: true })
-                            : (props.sku === 'free' && (props.likelimitEnable || props.followlimitEnable))
+                            : (props.sku === 'free' && (props.likelimitEnable || props.commentlimitEnable || props.followlimitEnable))
                                 ? () => {}
                                 : () => this.setState({ showOverlay: true })
                     }
-                    onClick={(props.sku === 'free' && (props.likelimitEnable || props.followlimitEnable))
+                    onClick={(props.sku === 'free' && (props.likelimitEnable || props.commentlimitEnable || props.followlimitEnable))
                         ? () => {
                             console.log('onClick',
                                 this.state.showOverlay,
                                 this.state.licenses,
                                 props.sku,
                                 props.likelimitEnable,
+                                props.commentlimitEnable,
                                 props.followlimitEnable)
                             this.setState({ handlelimit: true })}
                         : () => {}
@@ -199,7 +218,7 @@ class App extends Component {
                 </div>
                 {state.showOverlay && <Overlay onSet={this.onSetState.bind(this)}/>}
                 <Portal into='body'>
-                    <div className={(this.state.handlelimit && (props.likelimitEnable || props.followlimitEnable)) ? 'holofollowers-modal open' : 'holofollowers-modal'}>
+                    <div className={(this.state.handlelimit && (props.likelimitEnable || props.commentlimitEnable || props.followlimitEnable)) ? 'holofollowers-modal open' : 'holofollowers-modal'}>
                         <div className='backdrop' onClick={() => {this.setState({ handlelimit: false })}}/>
                         <div className='inner'>
                             <div className='holofollowers-text'>

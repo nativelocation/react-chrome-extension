@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "",
   "dependencies": {
+    "lodash": "^4.17.10",
     "node-spintax": "^1.0.4",
     "preact": "^8.2.7",
     "preact-portal": "^1.1.3",

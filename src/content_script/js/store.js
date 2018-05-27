@@ -5,7 +5,8 @@ import {
 import {
     attemptFollow,
     attemptUnfollow,
-    attemptLike
+    attemptLike,
+    attemptComment
 } from './utilities'
 
 let timeoutSeconds = 1000
@@ -13,7 +14,7 @@ const workers = () => {
     onmessage = function(event) {
         setTimeout(() => {
             postMessage(1)
-        }, 1000)
+        }, 3000)
     }
 }
 let code = workers.toString()
@@ -23,7 +24,8 @@ const blob = new Blob([code], {type: "application/javascript"})
 const automations = {
     attemptFollow,
     attemptUnfollow,
-    attemptLike
+    attemptLike,
+    attemptComment
 }
 
 const defaultState = {
@@ -35,12 +37,17 @@ const defaultState = {
     userUnfollowMaxTime:      1,
     userLikeMinTime:          1,
     userLikeMaxTime:          1,
+    userCommentMinTime:       1,
+    userCommentMaxTime:       1,
+    userCommentContent:       '',
     automatingFollow:         false,
     automatingUnfollow:       false,
     automatingLike:           false,
+    automatingComment:        false,
     active:                   true,
     fullLoad:                 false,
     likelimitEnable:          false,
+    commentlimitEnable:       false,
     followlimitEnable:        false,
     COUNT_LIMIT:              500
 }
@@ -66,10 +73,16 @@ const toggleAutomation = store => next => action => {
         case 'automate.like':
             automationType = 'Like'
             break
+        case 'automate.comment':
+            automationType = 'Comment'
+            break
         case 'likelimit':
             next(action)
             break
         case 'followlimit':
+            next(action)
+            break
+        case 'commentlimit':
             next(action)
             break
         default:
@@ -110,11 +123,49 @@ const toggleAutomation = store => next => action => {
         })
     }
 
+    if (timeout['Comment']) {
+        timeout['Comment'].terminate()
+        timeout['Comment'] = undefined
+        timeout = {}
+        return next({
+            type: 'set',
+            values: {
+                ['automatingComment']: false
+            }
+        })
+    }
+
     let state = store.getState()
     timeout[automationType] = new Worker(URL.createObjectURL(blob))
     timeout[automationType].onmessage = function(event) {
         timeoutSeconds = ((Math.random() * (state[`user${automationType}MaxTime`] - state[`user${automationType}MinTime`])) + state[`user${automationType}MinTime`]) * 1000
-        if (automationType === 'Like') {
+        if (automationType === 'Comment') {
+            // automations[`attempt${automationType}`](state['active'], state['COUNT_LIMIT'], state['sku'])
+            automations[`attempt${automationType}`](state.userCommentContent, state['active'], state['COUNT_LIMIT'], state['sku'])
+            .then((e) => {
+                console.log('then', e)
+                timeout[automationType].postMessage(timeoutSeconds)
+            })
+            .catch(err => {
+                // timeout[automationType].postMessage(timeoutSeconds)
+                console.log('error', error)
+                // next({
+                //     type: 'commentlimit',
+                //     values: {
+                //         ['commentlimitEnable']: true
+                //     }
+                // })
+                // timeout['Comment'].terminate()
+                // timeout['Comment'] = undefined
+                // timeout = {}
+                // return next({
+                //     type: 'set',
+                //     values: {
+                //         ['automatingComment']: false
+                //     }
+                // })
+            })
+        } else if (automationType === 'Like') {
             automations[`attempt${automationType}`](state['active'], state['COUNT_LIMIT'], state['sku'])
             .then((e) => {
                 console.log('then', e)
